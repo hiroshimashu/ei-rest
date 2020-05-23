@@ -1,9 +1,15 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
+
+type Movie struct {
+	id  string
+	url string
+}
 
 type UserStore interface {
 	GetUserId(id string) int
@@ -12,28 +18,43 @@ type UserStore interface {
 
 type UserServer struct {
 	store UserStore
+	http.Handler
 }
 
-func (u *UserServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func NewUserServer(store UserStore) *UserServer {
+	u := new(UserServer)
+
+	u.store = store
 
 	router := http.NewServeMux()
+	router.Handle("/users/", http.HandlerFunc(u.usersHandler))
+	router.Handle("/movies/", http.HandlerFunc(u.moviesHanlder))
 
-	router.Handle("/users/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user := r.URL.Path[len("/users/"):]
+	u.Handler = router
 
-		switch r.Method {
-		case http.MethodPost:
-			u.processUser(w, user)
-		case http.MethodGet:
-			u.showId(w, user)
-		}
-	}))
+	return u
+}
 
-	router.Handle("/movies/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-	}))
+func (u *UserServer) moviesHanlder(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "application/json")
+	json.NewEncoder(w).Encode(u.getMovieTable())
+}
 
-	router.ServeHTTP(w, r)
+func (u *UserServer) getMovieTable() []Movie {
+	return []Movie{
+		{"1111", "http://movie.com/1111"},
+	}
+}
+
+func (u *UserServer) usersHandler(w http.ResponseWriter, r *http.Request) {
+	user := r.URL.Path[len("/users/"):]
+
+	switch r.Method {
+	case http.MethodPost:
+		u.processUser(w, user)
+	case http.MethodGet:
+		u.showId(w, user)
+	}
 }
 
 func (u *UserServer) showId(w http.ResponseWriter, user string) {

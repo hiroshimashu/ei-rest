@@ -32,7 +32,7 @@ func TestGetUser(t *testing.T) {
 		},
 		nil,
 	}
-	server := &UserServer{&store}
+	server := NewUserServer(&store)
 	t.Run("returns user id 1", func(t *testing.T) {
 		request := newGetUserIdRequest("1")
 		response := httptest.NewRecorder()
@@ -69,7 +69,7 @@ func TestStoreUser(t *testing.T) {
 		nil,
 	}
 
-	server := &UserServer{&store}
+	server := NewUserServer(&store)
 
 	t.Run("it returns accepted on POST", func(t *testing.T) {
 		user := "1"
@@ -92,7 +92,7 @@ func TestStoreUser(t *testing.T) {
 
 func TestRecordUserAndRetrievingThem(t *testing.T) {
 	store := NewInMemoryUserStore()
-	server := &UserServer{store}
+	server := NewUserServer(store)
 	user := "1"
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostUserRequest(user))
@@ -128,16 +128,4 @@ func assertResponseBody(t *testing.T, got, want string) {
 	if got != want {
 		t.Errorf("response body is wrong, got %q want %q", got, want)
 	}
-}
-
-func TestMovies(t *testing.T) {
-	store := StubUserStore{}
-	server := &UserServer{&store}
-
-	t.Run("it return 200 on /movies", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, "/movies/", nil)
-		response := httptest.NewRecorder()
-		server.ServeHTTP(response, request)
-		assertStatus(t, response.Code, http.StatusOK)
-	})
 }
