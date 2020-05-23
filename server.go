@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strings"
 )
 
 type UserStore interface {
@@ -16,13 +15,25 @@ type UserServer struct {
 }
 
 func (u *UserServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	user := strings.TrimPrefix(r.URL.Path, "/users/")
-	switch r.Method {
-	case http.MethodPost:
-		u.processUser(w, user)
-	case http.MethodGet:
-		u.showId(w, user)
-	}
+
+	router := http.NewServeMux()
+
+	router.Handle("/users/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		user := r.URL.Path[len("/users/"):]
+
+		switch r.Method {
+		case http.MethodPost:
+			u.processUser(w, user)
+		case http.MethodGet:
+			u.showId(w, user)
+		}
+	}))
+
+	router.Handle("/movies/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	}))
+
+	router.ServeHTTP(w, r)
 }
 
 func (u *UserServer) showId(w http.ResponseWriter, user string) {

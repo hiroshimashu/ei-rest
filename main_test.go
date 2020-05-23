@@ -21,6 +21,9 @@ func (s *StubUserStore) RecordUser(id string) {
 	s.users = append(s.users, id)
 }
 
+type StubMovie struct {
+}
+
 func TestGetUser(t *testing.T) {
 	store := StubUserStore{
 		map[string]int{
@@ -125,4 +128,16 @@ func assertResponseBody(t *testing.T, got, want string) {
 	if got != want {
 		t.Errorf("response body is wrong, got %q want %q", got, want)
 	}
+}
+
+func TestMovies(t *testing.T) {
+	store := StubUserStore{}
+	server := &UserServer{&store}
+
+	t.Run("it return 200 on /movies", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/movies/", nil)
+		response := httptest.NewRecorder()
+		server.ServeHTTP(response, request)
+		assertStatus(t, response.Code, http.StatusOK)
+	})
 }
