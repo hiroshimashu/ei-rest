@@ -11,6 +11,16 @@ type Movie struct {
 	url string
 }
 
+type User struct {
+	id       string
+	gender   string
+	age      int
+	area     string
+	email    string
+	password string
+	ispaid   bool
+}
+
 type UserStore interface {
 	GetUserId(id string) int
 	RecordUser(id string)
