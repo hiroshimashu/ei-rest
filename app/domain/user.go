@@ -9,3 +9,5 @@ type User struct {
 	Password string `json:"password"`
 	IsPaid   bool   `json:"ispaid"`
 }
+
+type Users []User
