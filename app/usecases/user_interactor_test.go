@@ -42,3 +42,36 @@ func TestFindAllUsers(t *testing.T) {
 
 	})
 }
+
+func TestPostUser(t *testing.T) {
+	repository := databse.NewImMemoryUserRepositry()
+	t.Run("Correctly user has been posted", func(t *testing.T) {
+		user := domain.User{
+			ID:       "7777",
+			Gender:   "M",
+			Age:      26,
+			Area:     "tokyo",
+			Email:    "example3@g.com",
+			Password: "1111",
+			IsPaid:   true,
+		}
+		got, err := repository.Store(user)
+		if err != nil {
+			t.Errorf("Failed to post user")
+		}
+		want := domain.User{
+			ID:       "7777",
+			Gender:   "M",
+			Age:      26,
+			Area:     "tokyo",
+			Email:    "example3@g.com",
+			Password: "1111",
+			IsPaid:   true,
+		}
+
+		if !reflect.DeepEqual(got, want) {
+			t.Errorf("got %v want %v", got, want)
+		}
+
+	})
+}
