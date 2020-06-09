@@ -48,6 +48,26 @@ func TestUserRouter(t *testing.T) {
 
 		assertUsers(t, got, want)
 	})
+
+	t.Run("Correctly post works", func(t *testing.T) {
+		mockUserController := NewMockUserController()
+		reqBody := bytes.NewBufferString(`{"ID":"7777","Gender":"M","Age":26,"Area":"tokyo","Email":"example3@g.com","Password":"1111","IsPaid":true}`)
+		req := httptest.NewRequest(http.MethodPost, "/users", reqBody)
+		res := httptest.NewRecorder()
+		mockUserController.Create(res, req)
+		got := getUserFromResponse(t, res.Body)
+		want := domain.User{
+			ID:       "7777",
+			Gender:   "M",
+			Age:      26,
+			Area:     "tokyo",
+			Email:    "example3@g.com",
+			Password: "1111",
+			IsPaid:   true,
+		}
+
+		assertUser(t, got, want)
+	})
 }
 
 func assertStatus(t *testing.T, got, want int) {
@@ -69,7 +89,26 @@ func getUsersFromResponse(t *testing.T, body io.Reader) (users []domain.User) {
 	return
 }
 
+func getUserFromResponse(t *testing.T, body io.Reader) (user domain.User) {
+	t.Helper()
+
+	err := json.NewDecoder(body).Decode(&user)
+
+	if err != nil {
+		t.Fatal("unable to parse response from server")
+	}
+
+	return
+}
+
 func assertUsers(t *testing.T, got, want []domain.User) {
+	t.Helper()
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v want %v", got, want)
+	}
+}
+
+func assertUser(t *testing.T, got, want domain.User) {
 	t.Helper()
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v want %v", got, want)
