@@ -15,3 +15,8 @@ func (ui *UserInteractor) Index() (users domain.Users, err error) {
 
 	return users, nil
 }
+
+func (ui *UserInteractor) Add(u domain.User) (domain.User, error) {
+	user, err := ui.UserRepository.Store(u)
+	return user, err
+}
