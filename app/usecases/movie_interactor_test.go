@@ -86,9 +86,7 @@ func TestMovieInteractor(t *testing.T) {
 			},
 		}
 
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("got %v want %v", got, want)
-		}
+		assertMovies(t, got, want)
 	})
 
 	t.Run("Correctly Store method works", func(t *testing.T) {
@@ -103,9 +101,37 @@ func TestMovieInteractor(t *testing.T) {
 		}
 		fmt.Println(mockMovieInteractor.Index())
 		want := newMovie
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("got %v want %v", got, want)
-		}
+
+		assertMovie(t, got, want)
 
 	})
+
+	t.Run("Correctly IndexByID method works", func(t *testing.T) {
+		id := "5555"
+		got, err := mockMovieInteractor.IndexByID(id)
+		if err != nil {
+			t.Error(err)
+		}
+		want := domain.Movie{
+			ID:  "5555",
+			URL: "https://example2.com",
+		}
+
+		assertMovie(t, got, want)
+
+	})
+}
+
+func assertMovie(t *testing.T, got, want domain.Movie) {
+	t.Helper()
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v want %v", got, want)
+	}
+}
+
+func assertMovies(t *testing.T, got, want domain.Movies) {
+	t.Helper()
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v want %v", got, want)
+	}
 }
