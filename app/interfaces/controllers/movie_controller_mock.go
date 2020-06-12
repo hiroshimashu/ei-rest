@@ -13,7 +13,7 @@ type MockMovieConroller struct {
 	Interactor *usecases.MockMovieInteractor
 }
 
-func NewMovieController() *MockMovieConroller {
+func NewMockMovieController() *MockMovieConroller {
 	movies := domain.Movies{
 		domain.Movie{
 			ID:  "3333",

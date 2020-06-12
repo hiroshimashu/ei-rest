@@ -21,7 +21,7 @@ func TestUserRouter(t *testing.T) {
 		res := httptest.NewRecorder()
 		mockUserController.Index(res, req)
 
-		assertStatus(t, res.Code, http.StatusOK)
+		AssertStatus(t, res.Code, http.StatusOK)
 
 		got := getUsersFromResponse(t, res.Body)
 
@@ -68,13 +68,6 @@ func TestUserRouter(t *testing.T) {
 
 		assertUser(t, got, want)
 	})
-}
-
-func assertStatus(t *testing.T, got, want int) {
-	t.Helper()
-	if got != want {
-		t.Errorf("did not get correct status got %d, want %d", got, want)
-	}
 }
 
 func getUsersFromResponse(t *testing.T, body io.Reader) (users []domain.User) {
