@@ -11,7 +11,7 @@ func (MovieInteractor *MovieInteractor) Index() (movies domain.Movies, err error
 	return
 }
 
-func (MovieInteractor MovieInteractor) IndexByID(id string) (movie domain.Movie, err error) {
+func (MovieInteractor *MovieInteractor) IndexByID(id string) (movie domain.Movie, err error) {
 	movie, err = MovieInteractor.MovieRepository.FindByID(id)
 	return
 }
