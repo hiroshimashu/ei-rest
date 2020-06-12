@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/hiroshimashu/ei-rest/app/domain"
@@ -39,6 +40,25 @@ func (mc *MockMovieConroller) Index(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(movies)
+}
+
+func (mc *MockMovieConroller) IndexByID(w http.ResponseWriter, r *http.Request) {
+	var id string
+	err := json.NewDecoder(r.Body).Decode(&id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	movie, err := mc.Interactor.IndexByID(id)
+
+	if err != nil {
+		w.Header().Set("Content-Type", "applicaiton/json")
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(movie)
+
 }
 
 func (mc *MockMovieConroller) Create(w http.ResponseWriter, r *http.Request) {
