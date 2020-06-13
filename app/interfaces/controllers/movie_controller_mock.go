@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/hiroshimashu/ei-rest/app/domain"
 	"github.com/hiroshimashu/ei-rest/app/usecases"
@@ -43,12 +44,13 @@ func (mc *MockMovieConroller) Index(w http.ResponseWriter, r *http.Request) {
 }
 
 func (mc *MockMovieConroller) IndexByID(w http.ResponseWriter, r *http.Request) {
-	var id string
+	var id int
 	err := json.NewDecoder(r.Body).Decode(&id)
 	if err != nil {
 		log.Fatal(err)
 	}
-	movie, err := mc.Interactor.IndexByID(id)
+	strID := strconv.Itoa(id)
+	movie, err := mc.Interactor.IndexByID(strID)
 
 	if err != nil {
 		w.Header().Set("Content-Type", "applicaiton/json")

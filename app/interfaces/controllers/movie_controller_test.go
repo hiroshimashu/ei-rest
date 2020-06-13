@@ -14,6 +14,7 @@ import (
 
 func TestMovieController(t *testing.T) {
 	mockMovieController := NewMockMovieController()
+
 	t.Run("Correctly get movies", func(t *testing.T) {
 		reqBody := bytes.NewBufferString("")
 		req := httptest.NewRequest(http.MethodGet, "/movies", reqBody)
@@ -37,6 +38,23 @@ func TestMovieController(t *testing.T) {
 		}
 
 		assertMovies(t, got, want)
+	})
+
+	t.Run("Correctly get movie by index", func(t *testing.T) {
+		reqBody := bytes.NewBufferString("5555")
+		req := httptest.NewRequest(http.MethodGet, "/movies", reqBody)
+		res := httptest.NewRecorder()
+
+		mockMovieController.IndexByID(res, req)
+		AssertStatus(t, res.Code, http.StatusOK)
+
+		got := getMovieFromResponse(t, res.Body)
+		want := domain.Movie{
+			ID:  "5555",
+			URL: "https://example2.com",
+		}
+
+		assertMovie(t, got, want)
 	})
 
 	t.Run("Correctly post movie", func(t *testing.T) {
