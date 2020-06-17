@@ -13,9 +13,9 @@ func (mi *MockMyMovieInteractor) Index(userid string) (mymovies domain.MyMovies,
 	return
 }
 
-func (mi *MockMyMovieInteractor) Create(newMyMovie domain.MyMovie) (mymovie domain.MyMovie, err error) {
-	mymovie, err = mi.MyMovieRepository.Save(newMyMovie)
-	return
+func (mi *MockMyMovieInteractor) Create(newMyMovie domain.MyMovie) error {
+	err := mi.MyMovieRepository.Save(newMyMovie)
+	return err
 }
 
 func NewMockMyMovieInteractor(mr *MockMyMovieRepository) *MockMyMovieInteractor {
@@ -35,9 +35,9 @@ func (mr *MockMyMovieRepository) FindMyMovies(userid string) (mymovies domain.My
 	return movies, nil
 }
 
-func (mr *MockMyMovieRepository) Save(newMyMovie domain.MyMovie) (mymovie domain.MyMovie, err error) {
-	mymovie, err = mr.Save(newMyMovie)
-	return
+func (mr *MockMyMovieRepository) Save(newMyMovie domain.MyMovie) error {
+	mr.MyMovies = append(mr.MyMovies, newMyMovie)
+	return nil
 }
 
 func Filter(mymovies domain.MyMovies, f func(domain.MyMovie) bool) []domain.MyMovie {

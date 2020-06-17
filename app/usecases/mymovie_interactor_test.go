@@ -55,6 +55,20 @@ func TestMyMovieInteractor(t *testing.T) {
 
 		assertMyMovies(t, got, want)
 	})
+
+	t.Run("Correctly inserting mymovie works", func(t *testing.T) {
+		newMovie := domain.MyMovie{
+			ID:      "222222",
+			UserID:  "7777",
+			MovieID: "9999",
+		}
+		err := mockMyMovieInteractor.Create(newMovie)
+
+		if err != nil {
+			t.Error(err)
+		}
+
+	})
 }
 
 func assertMyMovie(t *testing.T, got, want domain.MyMovie) {
