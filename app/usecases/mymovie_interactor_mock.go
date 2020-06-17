@@ -25,14 +25,27 @@ func NewMockMyMovieInteractor(mr *MockMyMovieRepository) *MockMyMovieInteractor 
 }
 
 type MockMyMovieRepository struct {
+	MyMovies domain.MyMovies
 }
 
 func (mr *MockMyMovieRepository) FindMyMovies(userid string) (mymovies domain.MyMovies, err error) {
-	mymovies, err = mr.FindMyMovies(userid)
-	return
+	movies := Filter(mr.MyMovies, func(mymovie domain.MyMovie) bool {
+		return mymovie.UserID == userid
+	})
+	return movies, nil
 }
 
 func (mr *MockMyMovieRepository) Save(newMyMovie domain.MyMovie) (mymovie domain.MyMovie, err error) {
 	mymovie, err = mr.Save(newMyMovie)
 	return
+}
+
+func Filter(mymovies domain.MyMovies, f func(domain.MyMovie) bool) []domain.MyMovie {
+	movies := make([]domain.MyMovie, 0)
+	for _, v := range mymovies {
+		if f(v) {
+			movies = append(movies, v)
+		}
+	}
+	return movies
 }
