@@ -31,6 +31,29 @@ func (mc *MockMyMovieController) Index(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(mymovies)
 }
 
+func (mc *MockMyMovieController) Store(w http.ResponseWriter, r *http.Request) {
+	var mymovie domain.MyMovie
+	err := json.NewDecoder(r.Body).Decode(&mymovie)
+
+	if err != nil {
+		log.Fatal(err)
+		w.Header().Set("Content-Type", "applicaiton/json")
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(err)
+	}
+
+	err = mc.Interactor.Create(mymovie)
+
+	if err != nil {
+		log.Fatal(err)
+		w.Header().Set("Content-Type", "applicaiton/json")
+		w.WriteHeader(500)
+		json.NewEncoder(w).Encode(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+}
+
 func NewMockMyMovieController() *MockMyMovieController {
 	mymovies := domain.MyMovies{
 		domain.MyMovie{

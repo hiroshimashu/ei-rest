@@ -40,6 +40,29 @@ func TestMyMovieController(t *testing.T) {
 		assertMyMovies(t, got, want)
 
 	})
+
+	t.Run("Correclty return empty mymovie when no userid has matched", func(t *testing.T) {
+		reqBody := bytes.NewBufferString("4444")
+		req := httptest.NewRequest(http.MethodGet, "/mymovies", reqBody)
+		res := httptest.NewRecorder()
+
+		mockMyMovieController.Index(res, req)
+		AssertStatus(t, res.Code, http.StatusOK)
+
+		got := getMyMoviesFromResponse(t, res.Body)
+		want := domain.MyMovies{}
+
+		assertMyMovies(t, got, want)
+	})
+
+	t.Run("Correctly store mymovie", func(t *testing.T) {
+		reqBody := bytes.NewBufferString(`{"ID":"333333","UserID":"5555","MovieID":"9999"}`)
+		req := httptest.NewRequest(http.MethodPost, "/mymovies", reqBody)
+		res := httptest.NewRecorder()
+
+		mockMyMovieController.Store(res, req)
+		AssertStatus(t, res.Code, http.StatusOK)
+	})
 }
 
 func getMyMoviesFromResponse(t *testing.T, body io.Reader) (movie domain.MyMovies) {
