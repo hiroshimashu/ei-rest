@@ -1,21 +1,41 @@
+package infrastructure
+
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/hiroshimashu/ei-rest/app/controllers"
+	"bytes"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
+	"github.com/hiroshimashu/ei-rest/app/interfaces/controllers"
 )
 
-var Router *gin.Engine
-
 func TestUserRouter(t *testing.T) {
+	server := NewMockServer()
 
+	t.Run("it returns 200 on /users", func(t *testing.T) {
+		reqBody := bytes.NewBufferString("")
+		req := httptest.NewRequest(http.MethodGet, "/users", reqBody)
+
+		res := httptest.NewRecorder()
+		server.ServeHTTP(res, req)
+		AssertStatus(t, res.Code, http.StatusOK)
+
+	})
 }
 
-func init() {
-    router := gin.Default()
+func NewMockServer() *http.ServeMux {
+	mux := http.NewServeMux()
 
-    userController := controllers.NewMockUserController()
+	userController := controllers.NewMockUserController()
 
-    router.POST("/users", func(c *gin.Context) { userController.Create(c) })
-    router.GET("/users", func(c *gin.Context) { userController.Index(c) })
+	mux.HandleFunc("/users", userController.Index)
 
-    Router = router
+	return mux
+}
+
+func AssertStatus(t *testing.T, got, want int) {
+	t.Helper()
+	if got != want {
+		t.Errorf("did not get correct status got %d, want %d", got, want)
+	}
 }
