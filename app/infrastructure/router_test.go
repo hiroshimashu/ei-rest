@@ -50,14 +50,22 @@ func TestUserRouter(t *testing.T) {
 func TestMovieRouter(t *testing.T) {
 	server := NewMockServer()
 
-	t.Run("it returns 200 on /users", func(t *testing.T) {
+	t.Run("it returns 200 on /movies", func(t *testing.T) {
 		reqBody := bytes.NewBufferString("")
-		req := httptest.NewRequest(http.MethodGet, "/users", reqBody)
+		req := httptest.NewRequest(http.MethodGet, "/movies", reqBody)
 
 		res := httptest.NewRecorder()
 		server.ServeHTTP(res, req)
 		AssertStatus(t, res.Code, http.StatusOK)
 
+	})
+
+	t.Run("it returns 200 on /movie/{id}", func(t *testing.T) {
+		reqBody := bytes.NewBufferString("")
+		req := httptest.NewRequest(http.MethodGet, "/movie/5555", reqBody)
+		res := httptest.NewRecorder()
+		server.ServeHTTP(res, req)
+		AssertStatus(t, res.Code, http.StatusOK)
 	})
 
 }
@@ -71,8 +79,12 @@ func NewMockServer() *chi.Mux {
 	r.Get("/users", userController.Index)
 	r.Post("/user", userController.Create)
 	r.Get("/movies", movieController.Index)
-	r.Get("/movie", movieController.IndexByID)
-	r.Get("/movie", movieController.Create)
+	r.Route("/movie", func(r chi.Router) {
+		r.Post("/", movieController.Create)
+		r.Route("/{movieID}", func(r chi.Router) {
+			r.Get("/", movieController.IndexByID)
+		})
+	})
 
 	return r
 }
