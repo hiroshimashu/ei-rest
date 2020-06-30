@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strconv"
+	"strings"
 
 	"github.com/hiroshimashu/ei-rest/app/domain"
 	"github.com/hiroshimashu/ei-rest/app/usecases"
@@ -15,13 +15,13 @@ type MockMyMovieController struct {
 }
 
 func (mc *MockMyMovieController) Index(w http.ResponseWriter, r *http.Request) {
-	var id int
-	err := json.NewDecoder(r.Body).Decode(&id)
-	if err != nil {
-		log.Fatal(err)
+	keys := r.URL.Path
+	sk := strings.Split(keys, "/")
+	id := sk[2]
+	if id == " " {
+		log.Fatal("No id has given")
 	}
-	userid := strconv.Itoa(id)
-	mymovies, err := mc.Interactor.Index(userid)
+	mymovies, err := mc.Interactor.Index(id)
 	if err != nil {
 		w.Header().Set("Content-Type", "applicaiton/json")
 		w.WriteHeader(500)

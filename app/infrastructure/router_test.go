@@ -86,14 +86,33 @@ func TestMovieRouter(t *testing.T) {
 
 }
 
+func TestMyMovieRouter(t *testing.T) {
+	server := NewMockServer()
+	t.Run("it returns 200 on /user/:userID/mymovies", func(t *testing.T) {
+		reqBody := bytes.NewBufferString("")
+		req := httptest.NewRequest(http.MethodGet, "/user/5555/mymovies", reqBody)
+
+		res := httptest.NewRecorder()
+		server.ServeHTTP(res, req)
+		AssertStatus(t, res.Code, http.StatusOK)
+
+	})
+}
+
 func NewMockServer() *chi.Mux {
 	r := chi.NewRouter()
 
 	userController := controllers.NewMockUserController()
 	movieController := controllers.NewMockMovieController()
+	mymovieController := controllers.NewMockMyMovieController()
 
 	r.Get("/users", userController.Index)
-	r.Post("/user", userController.Create)
+	r.Route("/user", func(r chi.Router) {
+		r.Post("/", userController.Create)
+		r.Route("/{userID}", func(r chi.Router) {
+			r.Get("/mymovies", mymovieController.Index)
+		})
+	})
 	r.Get("/movies", movieController.Index)
 	r.Route("/movie", func(r chi.Router) {
 		r.Post("/", movieController.Create)
