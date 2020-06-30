@@ -41,8 +41,8 @@ func TestMovieController(t *testing.T) {
 	})
 
 	t.Run("Correctly get movie by index", func(t *testing.T) {
-		reqBody := bytes.NewBufferString("5555")
-		req := httptest.NewRequest(http.MethodGet, "/movies", reqBody)
+		reqBody := bytes.NewBufferString("")
+		req := httptest.NewRequest(http.MethodGet, "/movies/5555", reqBody)
 		res := httptest.NewRecorder()
 
 		mockMovieController.IndexByID(res, req)

@@ -2,8 +2,8 @@ package domain
 
 type MyMovie struct {
 	ID      string
-	UseID   string
-	MovieId string
+	UserID  string
+	MovieID string
 }
 
 type MyMovies []MyMovie

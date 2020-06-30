@@ -60,6 +60,22 @@ func TestMovieRouter(t *testing.T) {
 
 	})
 
+	t.Run("Successfully post movie", func(t *testing.T) {
+		reqBody := bytes.NewBufferString(`{"ID":"7777","URL": "https://www.example.com"}`)
+		req := httptest.NewRequest(http.MethodPost, "/movie", reqBody)
+		res := httptest.NewRecorder()
+		server.ServeHTTP(res, req)
+
+		want := domain.Movie{
+			ID:  "7777",
+			URL: "https://www.example.com",
+		}
+
+		got := getMovieFromResponse(t, res.Body)
+
+		assertMovie(t, got, want)
+	})
+
 	t.Run("it returns 200 on /movie/{id}", func(t *testing.T) {
 		reqBody := bytes.NewBufferString("")
 		req := httptest.NewRequest(http.MethodGet, "/movie/5555", reqBody)
@@ -113,4 +129,23 @@ func assertUser(t *testing.T, got, want domain.User) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v want %v", got, want)
 	}
+}
+
+func assertMovie(t *testing.T, got, want domain.Movie) {
+	t.Helper()
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v want %v", got, want)
+	}
+}
+
+func getMovieFromResponse(t *testing.T, body io.Reader) (movie domain.Movie) {
+	t.Helper()
+
+	err := json.NewDecoder(body).Decode(&movie)
+
+	if err != nil {
+		t.Fatal("unable to parse response from server")
+	}
+
+	return
 }
